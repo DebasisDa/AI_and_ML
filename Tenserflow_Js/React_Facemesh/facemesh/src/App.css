@@ -13,13 +13,6 @@
   }
 }
 
-.canvas {
-  background-image: url(http://127.0.0.1:8080/sea.jpg);
-  background-repeat: no-repeat;
-  background-size: cover;
-  margin-bottom: 10px;
-}
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
