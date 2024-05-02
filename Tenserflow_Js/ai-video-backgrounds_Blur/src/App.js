@@ -4,14 +4,13 @@
 // 4. Define references to those done
 // 5. Load bodypix done
 // 6. Detect function done
-// 7. Draw using drawMask done
+// 7. Blor vide done
 
 
 import React, { useRef } from "react";
 import * as tf from "@tensorflow/tfjs";
 import * as bodyPix from "@tensorflow-models/body-pix";
 import Webcam from "react-webcam";
-import background from './sea.jpg';
 import './App.css';
 
 function App() {
@@ -25,7 +24,7 @@ function App() {
     //  Loop and detect hands
     setInterval(() => {
       detect(net);
-     }, 100);
+    }, 100);
   };
 
   const detect = async (net) => {
@@ -44,35 +43,10 @@ function App() {
       // Set video width
       webcamRef.current.video.width = videoWidth;
       webcamRef.current.video.height = videoHeight;
-
-      // Set canvas height and width
-      // canvasRef.current.width = videoWidth;
-      // canvasRef.current.height = videoHeight;
-
-      // Make Detections
-      // const person = await net.segmentPersonParts(video);
-      // console.log(person);
-
-      // const coloredPartImage = bodyPix.toColoredPartMask(person);
-      //const coloredPartImage = bodyPix.toColoredPartMask(person);
-      
-      // const opacity = 0.7;
-      // const flipHorizontal = false;
-      // const maskBlurAmount = 0;
       const canvas = canvasRef.current;
-
-      // bodyPix.drawMask(
-      //   canvas,
-      //   video,
-      //   coloredPartImage,
-      //   opacity,
-      //   maskBlurAmount,
-      //   flipHorizontal
-      // );
-    
       const segmentation = await net.segmentPerson(video);
-      const backgroundBlurAmount = 20;
-      const edgeBlurAmount = 1;
+      const backgroundBlurAmount = 10;
+      const edgeBlurAmount = 4;
       const flipHorizontal = false;
 
       bodyPix.drawBokehEffect(
@@ -114,9 +88,6 @@ function App() {
             zindex: 9,
             width: 640,
             height: 480,
-            // backgroundImage: `url(${background})`,
-            // backgroundRepeat: "no-repeat",
-            // backgroundSize: "cover"
           }}
         />
       </header>
