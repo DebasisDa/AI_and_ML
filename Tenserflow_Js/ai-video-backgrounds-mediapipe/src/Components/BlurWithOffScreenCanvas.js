@@ -1,14 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState} from "react";
 import { SelfieSegmentation } from "@mediapipe/selfie_segmentation";
 import "../App.css";
 
-function ColorBackground() {
+function BlurWithOffScreenCanvas() {
     const inputVideoRef = useRef();
     const canvasRef = useRef();
     const contextRef = useRef();
+    const offscreenCanvas = useRef();
 
     useEffect(() => {
-        contextRef.current = canvasRef.current.getContext("2d");
+        offscreenCanvas.current = canvasRef.current.transferControlToOffscreen();
+
+        contextRef.current = offscreenCanvas.current.getContext("2d");
         const constraints = {
             video: { width: { min: 1280 }, height: { min: 720 } },
         };
@@ -46,58 +49,56 @@ function ColorBackground() {
         contextRef.current.clearRect(
             0,
             0,
-            canvasRef.current.width,
-            canvasRef.current.height
+            offscreenCanvas.current.width,
+            offscreenCanvas.current.height
         );
         contextRef.current.drawImage(
             results.segmentationMask,
             0,
             0,
-            canvasRef.current.width,
-            canvasRef.current.height
+            offscreenCanvas.current.width,
+            offscreenCanvas.current.height
         );
 
-        //Background effect with color code
-        contextRef.current.globalCompositeOperation = 'source-out';
-        contextRef.current.fillStyle = "#00FF00";
-        contextRef.current.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height
-        );
+        //Will show exact video without background effect
+        contextRef.current.globalCompositeOperation = 'source-in';
+        contextRef.current.drawImage(results.image, 0, 0, offscreenCanvas.current.width,
+            offscreenCanvas.current.height);
 
-        //Person (No change)
+        //Person (no change)
         contextRef.current.globalCompositeOperation = "destination-atop";
+        contextRef.current.filter = 'blur(10px)';
         contextRef.current.drawImage(
             results.image,
             0,
             0,
-            canvasRef.current.width,
-            canvasRef.current.height
+            offscreenCanvas.current.width,
+            offscreenCanvas.current.height
         );
-
         contextRef.current.restore();
     };
 
     const [resetBut, setResetBut] = useState(false);
     const reset = () => {
-        setResetBut(!resetBut);
+        setResetBut(true);
     };
 
     return (
         <div>
             {resetBut == false ?
                 <div className="App">
-                    <video autoPlay ref={inputVideoRef} style={{ position: "absolute" }} width={800} height={500} />
+                    <video autoPlay ref={inputVideoRef} style={{ position: "absolute", display: "none" }} width={800} height={500} />
                     <canvas ref={canvasRef} width={800} height={500} style={{ position: "absolute" }} />
                 </div>
                 :
                 <div className="App">
-                    <video autoPlay ref={inputVideoRef} style={{ position: "absolute" }} width={80} height={50} />
-                    <canvas ref={canvasRef} width={80} height={50} style={{ position: "absolute" }} />
+                    <video autoPlay ref={inputVideoRef} style={{ position: "absolute", display: "none" }} width={800} height={500} />
+                    <canvas ref={canvasRef} width={100} height={100} style={{ position: "absolute" }} />
                 </div>
             }
-
             <button type="reset" value="Reset" onClick={reset}>Reset</button>
         </div>
     );
 }
 
-export { ColorBackground };
+export { BlurWithOffScreenCanvas };

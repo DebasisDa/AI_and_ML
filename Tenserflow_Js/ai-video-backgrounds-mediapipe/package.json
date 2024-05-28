@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@mediapipe/selfie_segmentation": "0.1.1632777926",
+    "@tensorflow/tfjs": "4.19.0",
     "@testing-library/jest-dom": "5.17.0",
     "@testing-library/react": "13.4.0",
     "@testing-library/user-event": "13.5.0",

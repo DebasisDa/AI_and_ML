@@ -1,15 +1,19 @@
 import "./App.css";
-import {NoEffect} from './Components/NoEffect';
-import {ColorBackground} from './Components/ColorBackground';
+import { NoEffect } from './Components/NoEffect';
+import { ColorBackground } from './Components/ColorBackground';
 import { BlurBackground } from './Components/BlurBackground';
 import { ImageBackground } from './Components/ImageBackground';
+import { BlurBackgroundWebWorker } from './Components/webWorker/BlurBackgroundWebWorker';
+import { BlurWithOffScreenCanvas } from './Components/BlurWithOffScreenCanvas';
 
 function App() {
   return (
     // <NoEffect/>
-    // <ColorBackground/>
+    <ColorBackground />
     // <BlurBackground/>
-    <ImageBackground/>
+    //  <ImageBackground/>
+    // <BlurBackgroundWebWorker/>
+    // <BlurWithOffScreenCanvas/>
   );
 }
 
