@@ -13,9 +13,9 @@ function App() {
     // <ColorBackground />
     // <BlurBackground/>
     //  <ImageBackground/>
-    // <BlurBackgroundWebWorker/>
+    <BlurBackgroundWebWorker/>
     // <BlurWithOffScreenCanvas/>
-    <BlurWithOffScreenWithOutCanvas/>
+    // <BlurWithOffScreenWithOutCanvas/>
   );
 }
 

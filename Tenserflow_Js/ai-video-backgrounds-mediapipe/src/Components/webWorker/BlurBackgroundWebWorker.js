@@ -38,65 +38,48 @@ function BlurBackgroundWebWorker() {
       };
       processFrame();
 
-    return () => {
-      if (workerr) {
-        workerr.terminate();
-      }
-    };
-  }
+      return () => {
+        if (workerr) {
+          workerr.terminate();
+        }
+      };
+    }
   }, [workerr]);
 
-// useEffect(() => {
-//   if (workerRef.current) {
-//     workerRef.current.addEventListener("message", handleWorkerMessage);
-//   }
-//   return () => {
-//     if (workerRef.current) {
-//       workerRef.current.terminate();
-//     }
-//   };
-// }, []);
+  const initializeWorker = () => {
+    const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
+    setWorker(worker);
 
-const initializeWorker = () => {
-  // Ensure the path is correct and relative to the public directory
-  const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
-  // workerRef.current = worker;
-  setWorker(worker);
+    // Process each frame
+    if (offscreenCanvas == null)
+      offscreenCanvas = canvasRef.current.transferControlToOffscreen();
 
-  // Initialize the worker
-  // worker.postMessage({ type: "initialize" });
+  };
 
-  // Process each frame
-  if (offscreenCanvas == null)
-    offscreenCanvas = canvasRef.current.transferControlToOffscreen();
+  const handleWorkerMessage = (event) => {
+    const { type, data } = event.data;
+    if (type === "results") {
+      renderResults(data);
+    }
+  };
 
-};
+  const renderResults = (results) => {
+    const context = canvasRef.current.getContext("2d");
+    context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    context.drawImage(results.segmentationMask, 0, 0);
+    context.globalCompositeOperation = "source-in";
+    context.drawImage(results.image, 0, 0);
+    context.globalCompositeOperation = "destination-atop";
+    context.filter = "blur(10px)";
+    context.drawImage(results.image, 0, 0);
+  };
 
-const handleWorkerMessage = (event) => {
-  // console.log("dfghjlk");
-  const { type, data } = event.data;
-  if (type === "results") {
-    renderResults(data);
-  }
-};
-
-const renderResults = (results) => {
-  const context = canvasRef.current.getContext("2d");
-  context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-  context.drawImage(results.segmentationMask, 0, 0);
-  context.globalCompositeOperation = "source-in";
-  context.drawImage(results.image, 0, 0);
-  context.globalCompositeOperation = "destination-atop";
-  context.filter = "blur(10px)";
-  context.drawImage(results.image, 0, 0);
-};
-
-return (
-  <div className="App">
-    <video autoPlay ref={inputVideoRef} style={{ position: "absolute" }} width={800} height={500} />
-    <canvas ref={canvasRef} width={800} height={500} style={{ position: "absolute" }} />
-  </div>
-);
+  return (
+    <div className="App">
+      <video autoPlay ref={inputVideoRef} style={{ position: "absolute" }} width={800} height={500} />
+      <canvas ref={canvasRef} width={800} height={500} style={{ position: "absolute" }} />
+    </div>
+  );
 }
 
 export { BlurBackgroundWebWorker };
